@@ -10,4 +10,7 @@
     <string name="layout_width">match_parent</string>
     <string name="layout_height">wrap_content</string>
     <string name="name">Name: </string>
+    <string name="overview">Overview:</string>
+    <string name="vote">Vote:</string>
+    <string name="date">Date:</string>
 </resources>

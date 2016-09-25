@@ -18,9 +18,6 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_setting);
         
-//        if (getSupportActionBar() != null){
-//            Log.d(TAG, "onCreate: ActionBar not null");
-//        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getFragmentManager().beginTransaction()

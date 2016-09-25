@@ -124,7 +124,6 @@ public class MovieGridActivity extends AppCompatActivity {
             Uri uri = Uri.parse(stringBuilder.toString());
 
             String JsonStr;
-            Log.d(TAG, "doInBackground: " + uri.toString());
             BufferedReader bufferedReader = null;
             HttpsURLConnection urlConnection = null;
             try {

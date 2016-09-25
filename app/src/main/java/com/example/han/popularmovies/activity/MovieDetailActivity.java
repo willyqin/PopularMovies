@@ -33,7 +33,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
         Movie currentMovie = (Movie) getIntent().getSerializableExtra("movie");
         
         if (getIntent().getSerializableExtra("movie") == null){
@@ -46,7 +45,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.detail_date)).setText(currentMovie.getRelease_date());
 
         String url = "http://image.tmdb.org/t/p/w780" + currentMovie.getPoster_path();
-        Log.d(TAG, "onBindViewHolder:  " + url);  //图片地址是正确的
 
         Picasso.with(this)
                 .load(url)
