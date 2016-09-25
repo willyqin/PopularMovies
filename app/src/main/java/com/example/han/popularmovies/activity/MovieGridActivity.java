@@ -1,14 +1,24 @@
-package com.example.han.popularmovies;
+package com.example.han.popularmovies.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
+import com.example.han.popularmovies.R;
 import com.example.han.popularmovies.adapter.GridAdapter;
 import com.example.han.popularmovies.entity.Movie;
 import com.google.gson.Gson;
@@ -33,30 +43,69 @@ public class MovieGridActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<Movie> moviesList;
     private GridAdapter gridAdapter;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activitymenu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_setting:
+                startActivity(new Intent(this,SettingActivity.class));
+                return true;
+            default:
+                return true;
+
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_grid);
 
 
+
         moviesList = new ArrayList<Movie>();
-        updateMovies();
+
 
         gridAdapter = new GridAdapter(moviesList,this);
 
         recyclerView = (RecyclerView) findViewById(R.id.grid_recyclerview);
-//        recyclerView = (RecyclerView) findViewById(R.id.temp_recyclerview);
         toolbar = (Toolbar) findViewById(R.id.grid_toolbar);
 
         setSupportActionBar(toolbar);
 
+
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         recyclerView.setAdapter(gridAdapter);
+
+        gridAdapter.setRecyclerviewItemClickListener(new GridAdapter.RecyclerviewItemClickListener() {
+            @Override
+            public void onItemClick(View view, Movie movie) {
+                Intent intent = new Intent(getApplicationContext(), MovieDetailActivity.class);
+                intent.putExtra("movie", movie);
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        if (isConnected()) {
+            updateMovies();
+        }
+        super.onResume();
     }
 
     private void updateMovies() {
-        new DownLoadTask().execute("popularity.desc");
+        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(this);
+        String sort_type = preference.getBoolean(getString(R.string.sort_change_key),true) ? getString(R.string.sort_pop) : getString(R.string.sort_vote);
+        new DownLoadTask().execute(sort_type);
     }
 
     private class DownLoadTask extends AsyncTask<String,Void,List<Movie>>{
@@ -66,14 +115,13 @@ public class MovieGridActivity extends AppCompatActivity {
             if (params.length == 0){
                 return null;
             }
-            final String BASE_URI = "https://api.themoviedb.org/3/discover/movie?";
-            final String SORT_TYPE = "sort_by";
-            final String KEY = "api_key";
-            final String KEY_NUM = "3a1dd5861232f4a8f3c192d8f7f398f0";
-            Uri uri = Uri.parse(BASE_URI).buildUpon()
-                    .appendQueryParameter(SORT_TYPE,params[0])
-                    .appendQueryParameter(KEY,KEY_NUM)
-                    .build();
+            String BASE_URI = "https://api.themoviedb.org/3";
+            String KEY_NUM = "";                                               //这个地方应当是个人Key数字
+            String API_STR = "?api_key=";
+            StringBuilder stringBuilder = new StringBuilder(BASE_URI)
+                .append(params[0]).append(API_STR + KEY_NUM);
+
+            Uri uri = Uri.parse(stringBuilder.toString());
 
             String JsonStr;
             Log.d(TAG, "doInBackground: " + uri.toString());
@@ -142,6 +190,12 @@ public class MovieGridActivity extends AppCompatActivity {
             Log.d(TAG, "getMoviesFromJson: ***********************");
         }
         return movieList;
+    }
+
+    public boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        return  networkInfo != null && networkInfo.isConnectedOrConnecting();
     }
 
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="@string/sort_change_key"
+        android:title="@string/sort_type"
+        android:defaultValue="true"
+        android:summaryOn="@string/summary_on"
+        android:summaryOff="@string/summary_off"/>
+</PreferenceScreen>

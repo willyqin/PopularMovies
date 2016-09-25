@@ -1,9 +1,11 @@
 package com.example.han.popularmovies.entity;
 
+import java.io.Serializable;
+
 /**
  * Created by Han on 2016/9/24.
  */
-public class Movie  {
+public class Movie implements Serializable {
     private String title;
     private String poster_path;
     private String overview;
